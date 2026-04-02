@@ -1,1 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Konsent — 양지마을 주민포털</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#f4f5f7;--sf:#fff;--tx:#1a1a1a;--tx2:#555;--tx3:#888;
+  --bd:#d5d8dc;--bd2:#e8eaed;
+  --gn:#2e7d32;--gn-s:#e8f5e9;
+  --rd:#C0392B;--rd-s:#fce4ec;
+  --am:#E67E22;--am-s:#fff8e1;
+  --pu:#6a1b9a;--pu-s:#f3e5f5;
+  --nv:#1B3A5C;--nv-s:#E8EDF4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:#bfc4cb;color:var(--tx);font-size:14px;-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden}
+.phone{width:100%;max-width:400px;height:92vh;max-height:844px;background:var(--bg);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;position:relative;border:1px solid #a8adb4}
+@media(max-width:500px){body{background:var(--bg)}.phone{height:100vh;max-height:none;border-radius:0;border:none}}
 
+/* ═══ Bottom Nav ═══ */
+.bnav{height:52px;background:var(--sf);border-top:1px solid var(--bd);display:flex;flex-shrink:0;z-index:10}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:none;background:none;color:var(--tx3);cursor:pointer;font-family:inherit;position:relative;transition:color .15s}
+.bnav button.on{color:#1B3A5C}
+.bnav button.on::after{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:#1B3A5C}
+.bnav button .ni{font-size:16px;height:20px;display:flex;align-items:center;justify-content:center}
+.bnav button .nl{font-size:9px;font-weight:600;letter-spacing:-.2px}
+.nbadge{position:absolute;top:1px;right:calc(50% - 16px);min-width:14px;height:14px;background:var(--rd);color:#fff;font-size:8px;font-weight:700;border-radius:1px;display:flex;align-items:center;justify-content:center;padding:0 3px}
+
+.appc{flex:1;overflow:hidden;position:relative}
+.tp{display:none;overflow-y:auto;height:100%;-webkit-overflow-scrolling:touch}
+.tp.on{display:block}
+
+/* Screens */
+.scr{display:none;flex-direction:column;flex:1;overflow:hidden;position:absolute;inset:0;z-index:100;background:var(--sf)}
+.scr.on{display:flex}
+
+/* ═══ Header ═══ */
+.hd{padding:10px 16px 8px;background:#1B3A5C;color:#fff}
+.hd .gr{font-size:10px;opacity:.5;letter-spacing:.5px;font-weight:500}
+.hd h2{font-size:16px;font-weight:700;letter-spacing:-.5px}
+.sec-t{font-size:10px;font-weight:700;color:var(--tx3);letter-spacing:.5px}
+.badge-s{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border:1px solid transparent;letter-spacing:.2px}
+.b-gn{background:var(--gn-s);color:var(--gn);border-color:#c8e6c9}
+.b-rd{background:var(--rd-s);color:var(--rd);border-color:#f8bbd0}
+.b-am{background:var(--am-s);color:var(--am);border-color:#ffe0b2}
+.b-bl{background:var(--nv-s);color:var(--nv);border-color:#D0DBE8}
+.b-pu{background:var(--pu-s);color:var(--pu);border-color:#ce93d8}
+.b-tl{background:#E8EDF4;color:#1B3A5C;border-color:#D0DBE8}
+
+/* ═══ Login ═══ */
+.login-wrap{display:flex;flex-direction:column;background:#1a2b4a;justify-content:center;align-items:center;padding:32px 24px;overflow-y:auto;flex:1}
+.login-wrap h1{font-size:24px;font-weight:800;color:#fff;letter-spacing:-1px;margin-top:10px}
+.login-wrap .lt{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;letter-spacing:.5px;font-weight:500;margin-bottom:20px}
+.l-card{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:20px}
+.l-card h3{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:2px}
+.l-card p{font-size:10px;color:rgba(255,255,255,.35);margin-bottom:14px;line-height:1.5}
+.l-btn{width:100%;padding:12px;background:#3B82F6;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit}
+.l-btn:active{background:#2563EB}
+.l-btn .badge{background:rgba(255,255,255,.2);padding:1px 6px;font-size:9px;font-weight:800;letter-spacing:.5px}
+.l-foot{margin-top:20px;font-size:9px;color:rgba(255,255,255,.18);text-align:center;line-height:1.6}
+.l-role{display:flex;gap:6px;margin-top:10px}
+.l-role button{flex:1;padding:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:10px;font-weight:500;cursor:pointer;font-family:inherit}
+
+/* ═══ Auth Progress ═══ */
+.auth-pg{display:flex;flex-direction:column;background:var(--sf);justify-content:center;align-items:center;padding:32px 24px;flex:1}
+.auth-pg h2{font-size:14px;font-weight:700;margin-bottom:2px}
+.auth-pg .sub2{font-size:11px;color:var(--tx3);margin-bottom:20px}
+.ast{display:flex;align-items:flex-start;gap:12px;padding:10px 0;position:relative}
+.ast:not(:last-child)::after{content:'';position:absolute;left:13px;top:36px;bottom:-2px;width:2px;background:var(--bd)}
+.ast.done:not(:last-child)::after{background:#1B3A5C}
+.ast.now:not(:last-child)::after{background:linear-gradient(to bottom,#1B3A5C 50%,var(--bd) 50%)}
+.adot{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;background:var(--bd2);color:var(--tx3)}
+.ast.done .adot{background:#E8EDF4;color:#1B3A5C}
+.ast.now .adot{background:#1B3A5C;color:#fff;box-shadow:0 0 0 3px #E8EDF4}
+.atx h4{font-size:12px;font-weight:600;margin-bottom:1px}
+.atx p{font-size:10px;color:var(--tx3);line-height:1.4}
+.ast.done .atx h4{color:#1B3A5C}
+.ast.now .atx h4{color:#1B3A5C}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:14px;height:14px;border:2px solid #D0DBE8;border-top-color:#1B3A5C;border-radius:50%;animation:spin .8s linear infinite}
+
+/* ═══ Wait / Approved ═══ */
+.wait-screen{display:flex;flex-direction:column;background:var(--sf);justify-content:center;align-items:center;padding:32px 24px;text-align:center;flex:1}
+.wait-screen h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.wait-screen p{font-size:11px;color:var(--tx3);line-height:1.5;margin-bottom:16px}
+.wait-spinner{width:40px;height:40px;border:3px solid #D0DBE8;border-top-color:#1B3A5C;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+.sim-btn{padding:10px 20px;background:#E8EDF4;color:#1B3A5C;font-size:12px;font-weight:600;border:1px dashed #1B3A5C;cursor:pointer;font-family:inherit}
+
+/* ═══ Home Banner ═══ */
+.home-banner{margin:8px 12px 0;padding:12px 14px;background:#1B3A5C;color:#fff}
+.home-banner .bl2{font-size:9px;font-weight:600;opacity:.5;letter-spacing:.5px;margin-bottom:2px}
+.home-banner h3{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.home-banner .bu{font-size:10px;opacity:.5;margin-top:1px}
+.hstat{display:flex;gap:10px;margin-top:8px}
+.hstat div{display:flex;flex-direction:column}
+.hstat .hv{font-size:16px;font-weight:800}
+.hstat .hs{font-size:8px;opacity:.4;margin-top:1px}
+
+/* ═══ Todo Card ═══ */
+.todo-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf);margin:0 12px 4px;border:1px solid var(--bd2);cursor:pointer}
+.todo-card:active{background:var(--bg)}
+.todo-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.todo-body{flex:1;min-width:0}
+.todo-body h4{font-size:12px;font-weight:600;letter-spacing:-.2px;margin-bottom:1px}
+.todo-body p{font-size:10px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.todo-right{text-align:right;flex-shrink:0}
+.todo-right .dd{font-size:11px;font-weight:700}
+.todo-right .ds{font-size:9px;color:var(--tx3)}
+
+/* ═══ Notification ═══ */
+.noti-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--sf);margin:0 12px 2px;border:1px solid var(--bd2)}
+.noti-dot{width:6px;height:6px;flex-shrink:0;margin-top:4px}
+.noti-txt{flex:1}
+.noti-txt p{font-size:11px;line-height:1.4}
+.noti-txt .nt{font-size:9px;color:var(--tx3);margin-top:1px}
+
+/* ═══ Campaign Tab ═══ */
+.camp-tabs{display:flex;background:var(--sf);border-bottom:1px solid var(--bd)}
+.camp-tab{flex:1;text-align:center;padding:8px 0;font-size:11px;font-weight:500;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.camp-tab.on{color:#1B3A5C;font-weight:700;border-bottom-color:#1B3A5C}
+
+/* ═══ Campaign Card ═══ */
+.camp-card{margin:6px 12px;padding:10px 12px;background:var(--sf);border:1px solid var(--bd2)}
+.camp-card .cc-top{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.camp-card .cc-title{font-size:12px;font-weight:600;flex:1}
+.camp-card .cc-meta{font-size:10px;color:var(--tx3);display:flex;gap:8px;margin-bottom:6px}
+.camp-card .cc-bar{height:3px;background:var(--bd);overflow:hidden}
+.camp-card .cc-fill{height:100%}
+.camp-card .cc-bottom{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--tx3)}
+.camp-done{opacity:.5}
+.camp-done .cc-title{text-decoration:line-through}
+
+/* ═══ Community ═══ */
+.cat-chips{padding:6px 12px;display:flex;gap:4px;overflow-x:auto;background:var(--sf);border-bottom:1px solid var(--bd2)}
+.cat-chip{padding:3px 8px;font-size:9px;font-weight:600;background:var(--sf);border:1px solid var(--bd);color:var(--tx2);white-space:nowrap;cursor:pointer;letter-spacing:.2px}
+.cat-chip.on{background:#1B3A5C;color:#fff;border-color:#1B3A5C}
+.post-item{padding:10px 12px;background:var(--sf);margin:0 12px 4px;border:1px solid var(--bd2)}
+.post-item .pi-cat{font-size:9px;font-weight:600;color:#1B3A5C;margin-bottom:2px}
+.post-item h4{font-size:12px;font-weight:600;letter-spacing:-.2px;margin-bottom:1px}
+.post-item .pi-body{font-size:10px;color:var(--tx2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-item .pi-meta{display:flex;gap:6px;margin-top:4px;font-size:9px;color:var(--tx3)}
+.post-pin{border-left:2px solid #1B3A5C}
+
+/* ═══ Chat ═══ */
+.chat-room{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sf);margin:0 12px 4px;border:1px solid var(--bd2);cursor:pointer}
+.chat-room:active{background:var(--bg)}
+.cr-av{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.cr-info{flex:1;min-width:0}
+.cr-info h4{font-size:12px;font-weight:600;margin-bottom:1px}
+.cr-info p{font-size:10px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-meta{text-align:right;flex-shrink:0}
+.cr-time{font-size:9px;color:var(--tx3)}
+.cr-unread{min-width:16px;height:16px;background:var(--rd);color:#fff;font-size:8px;font-weight:700;border-radius:1px;display:inline-flex;align-items:center;justify-content:center;padding:0 3px;margin-top:2px}
+
+/* ═══ My Info ═══ */
+.my-profile{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--sf);border-bottom:1px solid var(--bd2)}
+.my-av{width:42px;height:42px;background:#E8EDF4;color:#1B3A5C;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.my-name h3{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.my-name p{font-size:11px;color:var(--tx2)}
+.my-badge{margin-left:auto;padding:3px 8px;font-size:10px;font-weight:700}
+.card{background:var(--sf);margin:0 12px 8px;padding:12px;border:1px solid var(--bd2)}
+.auth-flow{display:flex;align-items:center;gap:0;padding:10px 0}
+.af-step{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.af-dot{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:var(--bd2);color:var(--tx3)}
+.af-step.done .af-dot{background:var(--gn-s);color:var(--gn)}
+.af-label{font-size:8px;color:var(--tx3);font-weight:500}
+.af-step.done .af-label{color:var(--gn)}
+.af-bar{width:100%;height:2px;background:var(--bd);flex:1}
+.af-bar.done{background:var(--gn)}
+.perm-row{display:flex;gap:1px;padding:6px 0}
+.perm-box{flex:1;text-align:center;padding:4px 0;font-size:10px;font-weight:500;background:#f0f0f0;color:#bbb}
+.perm-box.on{background:var(--gn-s);color:var(--gn)}
+.tl-item{display:flex;gap:8px;padding:6px 0}
+.tl-dot{width:8px;height:8px;background:var(--bd);flex-shrink:0;margin-top:3px}
+.tl-dot.done{background:var(--gn)}
+.tl-dot.cur{background:#1B3A5C;box-shadow:0 0 0 2px #E8EDF4}
+.tl-body{flex:1;border-bottom:1px solid var(--bd2);padding-bottom:6px}
+.tl-body h5{font-size:11px;font-weight:600}
+.tl-body p{font-size:9px;color:var(--tx3)}
+.mi-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd2);cursor:pointer}
+.mi-item:active{background:var(--bg)}
+.mi-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--bg)}
+.mi-item .mia{margin-left:auto;color:var(--tx3);font-size:12px}
+/* ═══ Overlay ═══ */
+.overlay{position:absolute;inset:0;background:var(--bg);z-index:20;display:none;flex-direction:column;overflow:hidden}
+.overlay.show{display:flex}
+.ov-hd{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--sf);border-bottom:1px solid var(--bd);flex-shrink:0}
+.ov-hd .ov-back{width:28px;height:28px;border:1px solid var(--bd);background:var(--sf);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0;color:var(--tx2)}
+.ov-hd .ov-title{font-size:13px;font-weight:600;flex:1}
+.ov-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ═══ LOGIN ═══ -->
+  <div class="scr on" id="s-login">
+    <div class="login-wrap">
+      <img src="data:image/png;base64,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" width="108" height="108" style="display:block;margin:0 auto">
+      <h1>Konsent</h1>
+      <div class="lt">양지마을 통합재건축</div>
+      <div class="l-card">
+        <h3>본인인증으로 시작하기</h3>
+        <p>PASS 본인인증 → 등기부 자동 매칭으로 소유자 확인이 진행됩니다. 인증된 소유자만 참여할 수 있습니다.</p>
+        <button class="l-btn" onclick="startAuth()"><span class="badge">PASS</span> 본인인증 시작</button>
+        <div class="l-role"><button>카카오 인증</button><button>네이버 인증</button></div>
+      </div>
+      <div class="l-foot">본인인증 시 통신사 확인이 진행됩니다<br>개인정보처리방침 · 이용약관</div>
+    </div>
+  </div>
+
+  <!-- ═══ AUTH PROGRESS ═══ -->
+  <div class="scr" id="s-auth">
+    <div class="auth-pg">
+      <h2>소유자 인증 중</h2>
+      <div class="sub2">잠시만 기다려주세요</div>
+      <div style="display:inline-block;text-align:left">
+        <div class="ast" id="a1"><div class="adot">1</div><div class="atx"><h4>PASS 본인인증</h4><p>통신사를 통한 본인 확인</p></div></div>
+        <div class="ast" id="a2"><div class="adot">2</div><div class="atx"><h4>등기부 자동 조회</h4><p>등기부등본 API로 소유 정보 확인</p></div></div>
+        <div class="ast" id="a3"><div class="adot">3</div><div class="atx"><h4>소유자 매칭</h4><p>인증 정보와 등기부 소유자 대조</p></div></div>
+        <div class="ast" id="a4"><div class="adot">4</div><div class="atx"><h4>인증 완료</h4><p>권한 부여 및 서비스 접근</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WAIT ═══ -->
+  <div class="scr" id="s-wait">
+    <div class="wait-screen">
+      <div class="wait-spinner"></div>
+      <h2>등기부 매칭 진행 중</h2>
+      <p>PASS 인증이 완료되었습니다.<br>등기부등본과 소유자 정보를 대조하고 있습니다.<br><br>매칭 완료까지 <strong>최대 1~2영업일</strong> 소요될 수 있습니다.<br>완료 시 카카오 알림톡으로 안내드립니다.</p>
+      <div style="background:#E8EDF4;border:1px solid #D0DBE8;padding:10px 12px;margin-bottom:16px;text-align:left;width:100%">
+        <div style="font-size:10px;font-weight:600;color:#1B3A5C;margin-bottom:3px">내 인증 현황</div>
+        <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:2px"><span>PASS 인증</span><span style="color:#1B3A5C;font-weight:600">완료</span></div>
+        <div style="font-size:11px;display:flex;justify-content:space-between;margin-bottom:2px"><span>등기부 조회</span><span style="color:#1B3A5C;font-weight:600">진행 중…</span></div>
+        <div style="font-size:11px;display:flex;justify-content:space-between"><span>소유자 매칭</span><span style="color:var(--tx3)">대기</span></div>
+      </div>
+      <button class="sim-btn" onclick="simulateApprove()">승인 시뮬레이션 (데모용)</button>
+      <div style="font-size:8px;color:var(--tx3);margin-top:6px">실제 서비스에서는 이 버튼이 표시되지 않습니다</div>
+    </div>
+  </div>
+
+  <!-- ═══ APPROVED ═══ -->
+  <div class="scr" id="s-approved">
+    <div class="wait-screen">
+      <div style="width:48px;height:48px;background:#E8EDF4;color:#1B3A5C;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 12px">✓</div>
+      <h2>인증이 완료되었습니다</h2>
+      <p>603동 1201호 · 김●유님<br>소유자 확인이 완료되어 서비스를 이용하실 수 있습니다.</p>
+      <div style="background:#E8EDF4;border:1px solid #D0DBE8;padding:10px 12px;margin-bottom:16px;text-align:left;width:100%">
+        <div style="font-size:10px;font-weight:600;color:#1B3A5C;margin-bottom:3px">부여된 권한</div>
+        <div style="display:flex;gap:1px;margin-top:4px">
+          <div style="flex:1;text-align:center;padding:4px;background:var(--sf);font-size:10px;font-weight:500;color:#1B3A5C">열람</div>
+          <div style="flex:1;text-align:center;padding:4px;background:var(--sf);font-size:10px;font-weight:500;color:#1B3A5C">설문</div>
+          <div style="flex:1;text-align:center;padding:4px;background:var(--sf);font-size:10px;font-weight:500;color:#1B3A5C">동의</div>
+          <div style="flex:1;text-align:center;padding:4px;background:#f0f0f0;font-size:10px;color:#bbb">투표(P2)</div>
+        </div>
+      </div>
+      <button class="l-btn" onclick="enterApp()" style="background:#1B3A5C">시작하기</button>
+    </div>
+  </div>
+
+  <!-- ═══ APP MAIN ═══ -->
+  <div id="app-main" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+  <div class="appc">
+
+    <!-- ═══ TAB: HOME ═══ -->
+    <div class="tp on" id="t-home">
+      <div class="hd">
+        <div class="gr">양지마을 재건축 · 603동 1201호</div>
+        <h2>안녕하세요, 김●유님</h2>
+      </div>
+
+      <div class="home-banner">
+        <div class="bl2">양지마을 통합재건축</div>
+        <h3>주민대표단 단계</h3>
+        <div class="bu">시행자지정 법정기한: 2026.08.04</div>
+        <div class="hstat">
+          <div><div class="hv">39%</div><div class="hs">전체 인증률</div></div>
+          <div><div class="hv">4,700</div><div class="hs">총 세대</div></div>
+          <div><div class="hv">5</div><div class="hs">진행 중 캠페인</div></div>
+        </div>
+      </div>
+
+      <div style="padding:10px 12px 4px"><div class="sec-t">해야 할 것 <span style="color:var(--rd);font-weight:800">2</span></div></div>
+
+      <div class="todo-card" onclick="goTab('campaign')">
+        <div class="todo-icon" style="background:var(--rd-s);color:var(--rd)">!</div>
+        <div class="todo-body"><h4>소집통지 열람</h4><p>제42회 주민대표단 정기회의 소집통지</p></div>
+        <div class="todo-right"><div class="dd" style="color:var(--rd)">D-4</div><div class="ds">04.05 마감</div></div>
+      </div>
+      <div class="todo-card" onclick="goTab('campaign')">
+        <div class="todo-icon" style="background:var(--am-s);color:var(--am)">!</div>
+        <div class="todo-body"><h4>정관 동의서</h4><p>양지마을 통합재건축 정관(안) 동의 여부</p></div>
+        <div class="todo-right"><div class="dd" style="color:var(--am)">D-6</div><div class="ds">04.07 마감</div></div>
+      </div>
+
+      <div style="padding:10px 12px 4px"><div class="sec-t">완료 <span style="color:var(--gn);font-weight:800">3</span></div></div>
+
+      <div class="todo-card" style="opacity:.5">
+        <div class="todo-icon" style="background:var(--gn-s);color:var(--gn)">✓</div>
+        <div class="todo-body"><h4 style="text-decoration:line-through">정관(안) 의견 조사</h4><p>3/30 응답 완료</p></div>
+        <div class="todo-right"><div class="dd" style="color:var(--gn)">완료</div></div>
+      </div>
+      <div class="todo-card" style="opacity:.5">
+        <div class="todo-icon" style="background:var(--gn-s);color:var(--gn)">✓</div>
+        <div class="todo-body"><h4 style="text-decoration:line-through">신탁수수료 의견</h4><p>3/25 응답 완료</p></div>
+        <div class="todo-right"><div class="dd" style="color:var(--gn)">완료</div></div>
+      </div>
+      <div class="todo-card" style="opacity:.5">
+        <div class="todo-icon" style="background:var(--gn-s);color:var(--gn)">✓</div>
+        <div class="todo-body"><h4 style="text-decoration:line-through">신탁사 선정 설문</h4><p>3/12 응답 완료</p></div>
+        <div class="todo-right"><div class="dd" style="color:var(--gn)">완료</div></div>
+      </div>
+
+      <div style="padding:10px 12px 4px"><div class="sec-t">최근 알림</div></div>
+
+      <div class="noti-item"><div class="noti-dot" style="background:var(--rd)"></div><div class="noti-txt"><p><strong>소집통지</strong> 열람 기한이 <strong>4일</strong> 남았습니다.</p><div class="nt">30분 전 · 카카오 알림톡</div></div></div>
+      <div class="noti-item"><div class="noti-dot" style="background:var(--am)"></div><div class="noti-txt"><p><strong>정관 동의서</strong> 아직 응답하지 않으셨습니다.</p><div class="nt">2시간 전 · 앱 푸시</div></div></div>
+      <div class="noti-item"><div class="noti-dot" style="background:var(--gn)"></div><div class="noti-txt"><p><strong>정관(안) 의견 조사</strong> 응답이 정상 기록되었습니다.</p><div class="nt">3/30 14:28 · 앱 푸시</div></div></div>
+      <div class="noti-item"><div class="noti-dot" style="background:#1B3A5C"></div><div class="noti-txt"><p>603동 소통방에 새 메시지 <strong>12건</strong></p><div class="nt">3/30 11:00 · 앱 푸시</div></div></div>
+      <div style="height:12px"></div>
+    </div>
+
+    <!-- ═══ TAB: CAMPAIGN ═══ -->
+    <div class="tp" id="t-campaign">
+      <div class="hd"><h2>캠페인</h2></div>
+      <div class="camp-tabs">
+        <div class="camp-tab on" onclick="campTab('pending',this)">미완료 <span style="color:var(--rd);font-weight:700">2</span></div>
+        <div class="camp-tab" onclick="campTab('done',this)">완료 <span style="color:var(--gn)">3</span></div>
+        <div class="camp-tab" onclick="campTab('all',this)">전체</div>
+      </div>
+      <div id="camp-pending">
+        <div style="padding:8px 12px 0"><div class="sec-t">응답 대기 중</div></div>
+        <div class="camp-card">
+          <div class="cc-top"><span class="badge-s b-pu">통지문</span><div class="cc-title">소집통지</div><span style="font-size:11px;font-weight:700;color:var(--rd)">D-4</span></div>
+          <div class="cc-meta"><span>마감: 04.05</span><span>첨부 1건</span></div>
+          <div class="cc-bar"><div class="cc-fill" style="width:31%;background:var(--am)"></div></div>
+          <div class="cc-bottom"><span>전체 열람률 31%</span><span style="color:var(--rd);font-weight:500">열람 필요</span></div>
+        </div>
+        <div class="camp-card">
+          <div class="cc-top"><span class="badge-s b-gn">동의서</span><div class="cc-title">정관 동의서</div><span style="font-size:11px;font-weight:700;color:var(--am)">D-6</span></div>
+          <div class="cc-meta"><span>마감: 04.07</span><span>PASS 재인증 필요</span></div>
+          <div class="cc-bar"><div class="cc-fill" style="width:54%;background:var(--gn)"></div></div>
+          <div class="cc-bottom"><span>현재 동의율 54%</span><span style="color:var(--am);font-weight:500">동의/부동의 선택</span></div>
+        </div>
+        <div class="camp-card" style="opacity:.4;border:1px dashed var(--bd);cursor:default">
+          <div class="cc-top"><span class="badge-s b-pu">전자투표</span><div class="cc-title" style="color:var(--tx3)">총회 안건 의결</div><span style="font-size:9px;font-weight:600;color:var(--pu)">Phase 2</span></div>
+          <div class="cc-meta"><span>비밀투표 · 서면 병행 · 결과 구분 관리</span></div>
+          <div style="font-size:10px;color:var(--tx3);padding:4px 0">조합 설립 후 전자투표 기능이 활성화됩니다.</div>
+        </div>
+      </div>
+      <div id="camp-done" style="display:none">
+        <div style="padding:8px 12px 0"><div class="sec-t">완료</div></div>
+        <div class="camp-card camp-done"><div class="cc-top"><span class="badge-s b-bl">설문</span><div class="cc-title">정관(안) 의견 조사</div><span class="badge-s b-gn">완료</span></div><div class="cc-meta"><span>응답일: 3/30 14:28</span></div><div class="cc-bar"><div class="cc-fill" style="width:68%;background:var(--gn)"></div></div><div class="cc-bottom"><span>전체 응답률 68%</span><span style="color:var(--gn)">내 응답 기록됨</span></div></div>
+        <div class="camp-card camp-done"><div class="cc-top"><span class="badge-s b-bl">설문</span><div class="cc-title">신탁수수료 의견</div><span class="badge-s b-gn">완료</span></div><div class="cc-meta"><span>응답일: 3/25 10:42</span></div><div class="cc-bar"><div class="cc-fill" style="width:76%;background:var(--gn)"></div></div><div class="cc-bottom"><span>전체 응답률 76%</span><span style="color:var(--gn)">내 응답 기록됨</span></div></div>
+        <div class="camp-card camp-done"><div class="cc-top"><span class="badge-s b-bl">설문</span><div class="cc-title">신탁사 선정 설문</div><span class="badge-s b-gn">완료</span></div><div class="cc-meta"><span>응답일: 3/12 09:15</span></div><div class="cc-bar"><div class="cc-fill" style="width:92%;background:var(--gn)"></div></div><div class="cc-bottom"><span>전체 응답률 92%</span><span style="color:var(--gn)">내 응답 기록됨</span></div></div>
+      </div>
+      <div id="camp-all" style="display:none"><div style="padding:10px 12px;font-size:11px;color:var(--tx3)">전체 5건 (미완료 2 · 완료 3)</div></div>
+    </div>
+
+    <!-- ═══ TAB: COMMUNITY ═══ -->
+    <div class="tp" id="t-community">
+      <div class="hd"><h2>커뮤니티</h2></div>
+      <div class="cat-chips">
+        <span class="cat-chip on" onclick="filterCat('all',this)">전체</span>
+        <span class="cat-chip" onclick="filterCat('공지',this)">공지</span>
+        <span class="cat-chip" onclick="filterCat('자유',this)">자유</span>
+        <span class="cat-chip" onclick="filterCat('사업소식',this)">사업소식</span>
+        <span class="cat-chip" onclick="filterCat('Q&A',this)">Q&A</span>
+      </div>
+      <div style="padding-top:4px" id="post-list">
+        <div class="post-item post-pin board-post" data-cat="공지" onclick="openPost('notice1')" style="cursor:pointer"><div class="pi-cat">공지사항</div><h4>양지마을 디지털 플랫폼 전환 안내</h4><div class="pi-body">기존 플랫폼 서비스 중단에 따라 Konsent 플랫폼으로 전환되었습니다.</div><div class="pi-meta"><span>관리자</span><span>4/1</span><span>조회 842</span></div></div>
+        <div class="post-item post-pin board-post" data-cat="공지" onclick="openPost('notice2')" style="cursor:pointer"><div class="pi-cat">공지사항</div><h4>정관 확정 주민투표 재개 안내</h4><div class="pi-body">3/31 중단되었던 정관 확정 투표가 Konsent 플랫폼에서 재개됩니다.</div><div class="pi-meta"><span>관리자</span><span>4/1</span><span>조회 1,204</span></div></div>
+        <div class="post-item board-post" data-cat="자유" onclick="openPost('free1')" style="cursor:pointer"><div class="pi-cat">자유게시판</div><h4>이사비용 어떻게 되나요?</h4><div class="pi-body">혹시 이전비 산정 기준 아시는 분 계신가요?</div><div class="pi-meta"><span>정●호</span><span>4/1 11:45</span><span>댓글 3</span></div></div>
+        <div class="post-item board-post" data-cat="Q&A" onclick="openPost('qna1')" style="cursor:pointer"><div class="pi-cat">Q&A</div><h4>정관 동의서 제출 기한이요</h4><div class="pi-body">동의서 마감이 4/7인데 그 전에 수정할 수 있나요?</div><div class="pi-meta"><span>이●영</span><span>4/1 11:30</span><span>댓글 1</span></div></div>
+        <div class="post-item board-post" data-cat="사업소식" onclick="openPost('news1')" style="cursor:pointer"><div class="pi-cat">사업소식</div><h4>특별정비구역 지정 이후 진행 경과</h4><div class="pi-body">2025년 12월 지정 고시 이후 현재까지의 진행 상황을 안내드립니다.</div><div class="pi-meta"><span>관리자</span><span>4/1 10:20</span><span>조회 567</span></div></div>
+        <div class="post-item board-post" data-cat="공지" onclick="openPost('minutes')" style="cursor:pointer"><div class="pi-cat">공지사항</div><h4>제42회 주민대표단 정기회의 회의록</h4><div class="pi-body">2026.03.28 개최. 안건: 정관(안) 확정, 시행규정(안) 검토</div><div class="pi-meta"><span>관리자</span><span>4/1 10:00</span><span>첨부 PDF</span></div></div>
+      </div>
+      <div style="height:16px"></div>
+
+      <!-- ═══ OVERLAY: 게시글 상세 ═══ -->
+      <div class="overlay" id="ov-post">
+        <div class="ov-hd">
+          <div class="ov-back" onclick="document.getElementById('ov-post').classList.remove('show')">←</div>
+          <div class="ov-title" id="ov-post-title">게시글</div>
+        </div>
+        <div class="ov-body" id="ov-post-body"></div>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: CHAT ═══ -->
+    <div class="tp" id="t-chat">
+      <div class="hd"><h2>채팅</h2></div>
+      <div style="padding:8px 12px 2px"><div class="sec-t">채팅방</div></div>
+      <div class="chat-room" onclick="openChat('all')"><div class="cr-av" style="background:#E8EDF4;color:#1B3A5C">전체</div><div class="cr-info"><h4>양지마을 전체방</h4><p>이●수: 시공사 선정 기준이 어떻게...</p></div><div class="cr-meta"><div class="cr-time">11:52</div><div class="cr-unread">24</div></div></div>
+      <div class="chat-room" onclick="openChat('603')"><div class="cr-av" style="background:var(--gn-s);color:var(--gn)">603</div><div class="cr-info"><h4>603동 소통방</h4><p>박●진: 엘리베이터 점검 일정 공유합니다</p></div><div class="cr-meta"><div class="cr-time">11:48</div><div class="cr-unread">8</div></div></div>
+      <div style="padding:8px 12px;font-size:9px;color:var(--tx3);line-height:1.5">인증 완료 시 전체방 + 내 동방에 자동 가입됩니다.</div>
+    </div>
+
+    <!-- ═══ OVERLAY: 채팅 상세 ═══ -->
+    <div class="overlay" id="ov-chat">
+      <div class="ov-hd">
+        <div class="ov-back" onclick="document.getElementById('ov-chat').classList.remove('show')">←</div>
+        <div class="ov-title" id="ov-chat-title">채팅방</div>
+      </div>
+      <div class="ov-body" id="ov-chat-body" style="background:var(--bg);padding:8px 10px;display:flex;flex-direction:column;gap:5px"></div>
+      <div style="padding:8px 12px;background:var(--sf);border-top:1px solid var(--bd);display:flex;gap:6px;align-items:center">
+        <input style="flex:1;padding:7px 8px;border:1px solid var(--bd);font-size:11px;font-family:inherit" placeholder="메시지 입력…">
+        <button style="padding:7px 12px;background:#1B3A5C;color:#fff;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">전송</button>
+      </div>
+    </div>
+
+    <!-- ═══ TAB: MY INFO ═══ -->
+    <div class="tp" id="t-my">
+      <div class="my-profile"><div class="my-av">김</div><div class="my-name"><h3>김●유</h3><p>603동 1201호 · 단독소유</p></div><div class="my-badge" style="background:var(--gn-s);color:var(--gn)">인증완료</div></div>
+      <div class="card">
+        <div class="sec-t" style="margin-bottom:3px">인증 상태</div>
+        <div class="auth-flow">
+          <div class="af-step done"><div class="af-dot">✓</div><div class="af-label">가입</div></div><div class="af-bar done"></div>
+          <div class="af-step done"><div class="af-dot">✓</div><div class="af-label">PASS</div></div><div class="af-bar done"></div>
+          <div class="af-step done"><div class="af-dot">✓</div><div class="af-label">등기매칭</div></div><div class="af-bar done"></div>
+          <div class="af-step done"><div class="af-dot">✓</div><div class="af-label">운영가능</div></div>
+        </div>
+        <div class="sec-t" style="margin-bottom:3px;margin-top:4px">내 권한</div>
+        <div class="perm-row"><div class="perm-box on">열람</div><div class="perm-box on">설문</div><div class="perm-box on">동의</div><div class="perm-box">투표 (P2)</div></div>
+      </div>
+      <div style="padding:4px 12px"><div class="sec-t">내 활동 내역</div></div>
+      <div class="card" style="padding:8px 10px">
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><h5>정관(안) 의견 조사 — 응답</h5><p>3/30 14:28 · tx:a3f8c2d1</p></div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><h5>신탁수수료 의견 — 응답</h5><p>3/25 10:42 · tx:b7e4a1f3</p></div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><h5>신탁사 선정 설문 — 응답</h5><p>3/12 09:15 · tx:c2d9e8a4</p></div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><h5>PASS 본인인증 완료</h5><p>3/10 11:30</p></div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body" style="border-bottom:none"><h5>등기부 자동 매칭 완료</h5><p>3/10 11:31 · 603동 1201호 확인</p></div></div>
+      </div>
+      <div style="padding:4px 12px"><div class="sec-t">문서 보관함</div></div>
+      <div style="background:var(--sf);margin:0 12px;border:1px solid var(--bd2)">
+        <div class="mi-item"><div class="mi-icon">PDF</div><div style="font-size:11px">정관안_v3_최종.pdf<div style="font-size:9px;color:var(--tx3)">2.4MB · 3/28 수신</div></div><div class="mia">›</div></div>
+        <div class="mi-item"><div class="mi-icon">PDF</div><div style="font-size:11px">시행규정안_부속서류.pdf<div style="font-size:9px;color:var(--tx3)">5.1MB · 3/30 수신</div></div><div class="mia">›</div></div>
+        <div class="mi-item"><div class="mi-icon">PDF</div><div style="font-size:11px">제42회 소집통지.pdf<div style="font-size:9px;color:var(--tx3)">1.2MB · 4/1 수신</div></div><div class="mia">›</div></div>
+      </div>
+      <div style="padding:8px 12px 4px"><div class="sec-t">사업 진행 현황</div></div>
+      <div class="card" style="padding:8px 10px">
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-body"><h5>특별정비구역 지정</h5><p>2025.12 완료</p></div></div>
+        <div class="tl-item"><div class="tl-dot cur"></div><div class="tl-body"><h5>주민대표단 운영</h5><p>진행 중 · 정관 확정 투표 재개</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><h5>시행자 지정</h5><p>법정 기한: 2026.08.04</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-body"><h5>조합 설립</h5><p>예정</p></div></div>
+        <div class="tl-item"><div class="tl-dot"></div><div class="tl-body" style="border-bottom:none"><h5>사업시행 · 관리처분</h5><p>예정</p></div></div>
+      </div>
+      <div style="padding:8px 12px 4px"><div class="sec-t">설정</div></div>
+      <div style="background:var(--sf);margin:0 12px;border:1px solid var(--bd2)">
+        <div class="mi-item"><div class="mi-icon">알림</div><div style="font-size:11px">알림 설정</div><div class="mia">›</div></div>
+        <div class="mi-item"><div class="mi-icon">연락</div><div style="font-size:11px">연락처 변경</div><div class="mia">›</div></div>
+        <div class="mi-item"><div class="mi-icon">FAQ</div><div style="font-size:11px">자주 묻는 질문</div><div class="mia">›</div></div>
+        <div class="mi-item"><div class="mi-icon">문의</div><div style="font-size:11px">문의하기</div><div class="mia">›</div></div>
+        <div class="mi-item" style="color:var(--tx3)"><div class="mi-icon">나감</div><div style="font-size:11px">로그아웃</div><div class="mia">›</div></div>
+      </div>
+      <div style="padding:12px;text-align:center;font-size:9px;color:var(--tx3);letter-spacing:.3px">Konsent v1.0 · PASS 인증 · 등기부 API 자동연동</div>
+    </div>
+
+  </div>
+  <nav class="bnav">
+    <button class="on" onclick="goTab('home')"><div class="ni">▦</div><div class="nl">홈</div><div class="nbadge">2</div></button>
+    <button onclick="goTab('campaign')"><div class="ni">▤</div><div class="nl">캠페인</div><div class="nbadge">2</div></button>
+    <button onclick="goTab('community')"><div class="ni">≡</div><div class="nl">커뮤니티</div></button>
+    <button onclick="goTab('chat')"><div class="ni">◫</div><div class="nl">채팅</div><div class="nbadge">32</div></button>
+    <button onclick="goTab('my')"><div class="ni">○</div><div class="nl">내 정보</div></button>
+  </nav>
+  </div>
+</div>
+
+<script>
+function showScr(id){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on')}
+function startAuth(){
+  showScr('s-auth');
+  var steps=['a1','a2','a3','a4'],delays=[0,1200,2400,3600];
+  for(var i=0;i<steps.length;i++){(function(idx){setTimeout(function(){
+    if(idx>0){var prev=document.getElementById(steps[idx-1]);prev.className='ast done';prev.querySelector('.adot').innerHTML='✓'}
+    var cur=document.getElementById(steps[idx]);cur.className='ast now';cur.querySelector('.adot').innerHTML='<div class="spinner"></div>';
+  },delays[idx])})(i)}
+  setTimeout(function(){var a3=document.getElementById('a3');a3.className='ast now';a3.querySelector('.adot').innerHTML='<div class="spinner"></div>';document.getElementById('a2').className='ast done';document.getElementById('a2').querySelector('.adot').innerHTML='✓'},2400);
+  setTimeout(function(){showScr('s-wait')},4000);
+}
+function simulateApprove(){showScr('s-approved')}
+function enterApp(){document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on')});document.getElementById('app-main').style.display='flex'}
+function goTab(name){
+  document.querySelectorAll('.overlay').forEach(function(o){o.classList.remove('show')});
+  document.querySelectorAll('.tp').forEach(function(t){t.classList.remove('on')});
+  var map={home:'t-home',campaign:'t-campaign',community:'t-community',chat:'t-chat',my:'t-my'};
+  if(map[name])document.getElementById(map[name]).classList.add('on');
+  document.querySelectorAll('.bnav button').forEach(function(b){b.classList.remove('on')});
+  event.target.closest?event.target.closest('button').classList.add('on'):null;
+}
+function campTab(which,el){
+  el.parentElement.querySelectorAll('.camp-tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');
+  document.getElementById('camp-pending').style.display=which==='pending'||which==='all'?'block':'none';
+  document.getElementById('camp-done').style.display=which==='done'||which==='all'?'block':'none';
+  document.getElementById('camp-all').style.display=which==='all'?'block':'none';
+}
+function filterCat(cat,el){
+  el.parentElement.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('on')});el.classList.add('on');
+  document.querySelectorAll('.board-post').forEach(function(p){p.style.display=(cat==='all'||p.getAttribute('data-cat')===cat)?'':'none'});
+}
+var postData={
+  notice1:{cat:'공지',title:'디지털 플랫폼 전환 안내',author:'관리자',time:'2026.04.01 09:00',views:842,body:'<p>안녕하세요, 양지마을 주민대표단입니다.</p><p>기존 디지털 플랫폼(얼마집) 서비스가 종료됨에 따라, 새로운 플랫폼 <strong>Konsent(컨센트)</strong>를 통해 사업을 운영하게 되었습니다.</p><p>주요 변경 사항:</p><p>• 소유자 본인인증 기반 보안 강화<br>• 설문·동의서·전자투표 통합 운영<br>• 동별 채팅방 및 문서 열람 추적</p><p>기존 설문 결과는 모두 이관됩니다.</p>',comments:[{name:'김●유',time:'11:02',text:'기존 설문 결과도 유지되나요?'},{name:'관리자',time:'11:15',text:'네, 기존 설문 데이터는 모두 이관됩니다.',admin:true}]},
+  notice2:{cat:'공지',title:'정관 확정 주민투표 재개 안내',author:'관리자',time:'2026.04.01 09:30',views:1204,body:'<p>정관(안) 확정을 위한 전자투표가 재개됩니다.</p><p><strong>투표 기간:</strong> 2026.04.07 ~ 04.14 (7일간)<br><strong>투표 방식:</strong> Konsent 앱 내 전자투표<br><strong>투표 자격:</strong> 소유자 본인인증 완료자</p><p>아직 본인인증을 완료하지 않으신 분은 가급적 4월 6일까지 완료해주시기 바랍니다.</p>',comments:[{name:'이●영',time:'10:45',text:'대리투표도 가능한가요?'},{name:'관리자',time:'11:00',text:'위임장 제출 시 대리투표 가능합니다.',admin:true}]},
+  free1:{cat:'자유',title:'이사비용 어떻게 되나요?',author:'정●호',time:'2026.04.01 11:45',views:45,body:'<p>혹시 재건축 완료 후 이사비용 지원 관련 정보 있으신 분 계신가요?</p><p>다른 단지 사례를 보면 세대당 일정 금액이 나온다고 하던데, 양지마을은 어떻게 되는지 궁금합니다.</p>',comments:[{name:'김●수',time:'11:50',text:'보통 세대당 이사비 별도 책정됩니다.'},{name:'이●호',time:'11:55',text:'정관에 이사비 조항이 있을 겁니다.'},{name:'정●호',time:'12:01',text:'감사합니다!'}]},
+  qna1:{cat:'Q&A',title:'정관 동의서 제출 기한이요',author:'이●영',time:'2026.04.01 11:30',views:32,body:'<p>정관 동의서 마감이 언제까지인가요? 앱에서 바로 서명하면 되는 건지, 종이 서류도 받아주는지 궁금합니다.</p>',comments:[{name:'관리자',time:'11:40',text:'마감은 4월 7일까지이며, 앱 내 전자서명으로 제출하시면 됩니다.',admin:true}]},
+  news1:{cat:'사업소식',title:'특별정비구역 지정 이후 진행 경과',author:'관리자',time:'2026.04.01 10:20',views:567,body:'<p>양지마을이 특별정비구역으로 지정된 이후 주요 진행 사항을 안내드립니다.</p><p>1. 정관(안) 의견 조사 완료 — 응답률 68%<br>2. 신탁수수료 의견 조사 진행 중 — 현재 76%<br>3. 정관 동의서 수집 중 — 현재 54%<br>4. 시행자 지정 법정기한: 2026.08.04</p>',comments:[]},
+  minutes:{cat:'공지',title:'제42회 주민대표단 정기회의 회의록',author:'관리자',time:'2026.04.01 10:00',views:389,body:'<p>2026년 3월 28일 개최된 제42회 주민대표단 정기회의 회의록입니다.</p><p><strong>주요 안건:</strong><br>1. 정관(안) 확정 건<br>2. 시행규정(안) 검토 건<br>3. 신탁수수료 협의 건</p>',comments:[]}
+};
+function openPost(key){
+  var d=postData[key];if(!d)return;
+  document.getElementById('ov-post-title').textContent=d.title;
+  var cmtHtml='';
+  d.comments.forEach(function(c){cmtHtml+='<div style="padding:6px 0;border-bottom:1px solid var(--bd2);font-size:11px"><div style="display:flex;gap:5px;margin-bottom:2px"><span style="font-weight:600;font-size:10px'+(c.admin?';color:#1B3A5C':'')+'">'+c.name+(c.admin?' ✓':'')+'</span><span style="font-size:9px;color:var(--tx3)">'+c.time+'</span></div><div style="color:var(--tx2);line-height:1.4">'+c.text+'</div></div>'});
+  document.getElementById('ov-post-body').innerHTML=
+    '<div style="padding:10px 12px;border-bottom:1px solid var(--bd2)"><div style="margin-bottom:3px"><span class="badge-s b-bl">'+d.cat+'</span></div><div style="font-size:14px;font-weight:700;margin-bottom:4px">'+d.title+'</div><div style="display:flex;gap:6px;font-size:10px;color:var(--tx3)"><span'+(d.author==='관리자'?' style="color:#1B3A5C;font-weight:600"':'')+'>'+d.author+'</span><span>'+d.time+'</span><span>조회 '+d.views+'</span></div></div>'+
+    '<div style="padding:12px;font-size:12px;line-height:1.7;color:var(--tx)">'+d.body+'</div>'+
+    '<div style="padding:10px 12px;border-top:3px solid var(--bg)"><div style="font-size:11px;font-weight:600;margin-bottom:6px">댓글 '+d.comments.length+'</div>'+cmtHtml+(d.comments.length===0?'<div style="padding:12px 0;text-align:center;font-size:10px;color:var(--tx3)">아직 댓글이 없습니다</div>':'')+'<div style="display:flex;gap:4px;margin-top:8px"><input style="flex:1;padding:5px 8px;font-size:11px;border:1px solid var(--bd);font-family:inherit" placeholder="댓글 입력..."><button style="padding:5px 10px;background:#1B3A5C;color:#fff;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">전송</button></div></div>';
+  document.getElementById('ov-post').classList.add('show');
+}
+var chatData={
+  all:{title:'양지마을 전체방',members:1847,msgs:[
+    {name:'이●수',time:'11:52',text:'시공사 선정 기준이 어떻게 되는 건가요?'},
+    {name:'박●진',time:'11:48',text:'정관 투표 언제 재개되나요?'},
+    {name:'김●아',time:'11:35',text:'주차장 배치 관련해서 의견 나눠보면 좋겠습니다'},
+    {name:'관리자',time:'11:20',text:'플랫폼 전환 관련 공지를 게시판에 올렸습니다. 확인 부탁드립니다.',admin:true},
+    {name:'정●호',time:'11:15',text:'이사비용은 어떻게 되나요?'},
+    {name:'한●수',time:'11:10',text:'감사합니다'}
+  ]},
+  '603':{title:'603동 소통방',members:287,msgs:[
+    {name:'박●진',time:'11:48',text:'엘리베이터 점검 일정 아시는 분?'},
+    {name:'김●유',time:'11:30',text:'다음주 수요일로 알고 있어요',me:true},
+    {name:'이●수',time:'11:20',text:'603동 주차라인 변경 건은 어떻게 됐나요?'},
+    {name:'관리자',time:'10:00',text:'603동 거주자 분들께 안내드립니다. 이번 주 금요일 옥상 방수공사 예정입니다.',admin:true}
+  ]}
+};
+function openChat(key){
+  var d=chatData[key];if(!d)return;
+  document.getElementById('ov-chat-title').textContent=d.title;
+  var html='<div style="text-align:center;font-size:9px;color:var(--tx3);padding:3px 0;margin-bottom:3px">참여자 '+d.members+'명</div>';
+  d.msgs.forEach(function(m){
+    if(m.admin){
+      html+='<div style="background:#E8EDF4;border:1px solid #D0DBE8;padding:6px 8px;font-size:11px;text-align:center;color:#1B3A5C"><div style="font-size:8px;font-weight:700;margin-bottom:1px;letter-spacing:.3px">관리자 공지</div>'+m.text+'</div>';
+    }else if(m.me){
+      html+='<div style="display:flex;justify-content:flex-end"><div style="background:#1B3A5C;color:#fff;padding:6px 8px;font-size:11px;line-height:1.4;max-width:75%">'+m.text+'<div style="font-size:8px;opacity:.5;margin-top:2px;text-align:right">'+m.time+'</div></div></div>';
+    }else{
+      html+='<div style="display:flex;gap:6px;align-items:flex-start"><div style="width:24px;height:24px;background:var(--sf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;color:var(--tx2)">'+m.name.charAt(0)+'</div><div style="flex:1"><div style="font-size:9px;font-weight:600;margin-bottom:1px">'+m.name+' <span style="font-weight:400;color:var(--tx3)">'+m.time+'</span></div><div style="background:var(--sf);border:1px solid var(--bd2);padding:6px 8px;font-size:11px;line-height:1.4;display:inline-block">'+m.text+'</div></div></div>';
+    }
+  });
+  document.getElementById('ov-chat-body').innerHTML=html;
+  document.getElementById('ov-chat').classList.add('show');
+}
+</script>
+</body>
+</html>
